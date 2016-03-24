@@ -1,0 +1,100 @@
+{
+  "name": "levelgraph",
+  "version": "1.1.1",
+  "description": "A graph database for Node.js and the browser built on top of LevelUp",
+  "main": "lib/levelgraph.js",
+  "scripts": {
+    "test": "mocha --recursive --bail --reporter spec test",
+    "zuul": "zuul test/common.js test/*spec.js",
+    "zuul-local": "zuul --open --local 8080 -- test/common.js test/*spec.js",
+    "coverage": "rm -rf coverage; istanbul cover _mocha -- --recursive --reporter spec --bail",
+    "publish-coverage": "cat coverage/lcov.info | coveralls",
+    "ci": "mocha --recursive --bail --watch test",
+    "jshint-lib": "jshint lib/*.js",
+    "jshint-test": "jshint test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcollina/levelgraph.git"
+  },
+  "bugs": {
+    "url": "http://github.com/mcollina/levelgraph/issues"
+  },
+  "pre-commit": [
+    "jshint-lib",
+    "jshint-test",
+    "test"
+  ],
+  "keywords": [
+    "leveldb",
+    "graph",
+    "level",
+    "database",
+    "triples",
+    "triple"
+  ],
+  "author": {
+    "name": "Matteo Collina",
+    "email": "hello@matteocollina.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "~10.2.4",
+    "chai": "^1.9.2",
+    "coveralls": "^2.11.2",
+    "istanbul": "~0.3.2",
+    "jshint": "~2.5.6",
+    "level-browserify": "^1.0.1",
+    "level-subkey": "^7.7.1",
+    "level-sublevel": "^6.4.6",
+    "level-test": "^2.0.0",
+    "mocha": "^2.2.5",
+    "multilevel": "^7.2.0",
+    "osenv": "^0.1.0",
+    "pre-commit": "1.0.7",
+    "setimmediate": "^1.0.2",
+    "sinon": "~1.10.3",
+    "sinon-chai": "^2.6.0",
+    "uglify-js": "~2.4.8",
+    "zuul": "^3.0.0"
+  },
+  "dependencies": {
+    "async": "~1.2.1",
+    "callback-stream": "~1.0.0",
+    "inherits": "^2.0.1",
+    "level-ws": "0.0.0",
+    "readable-stream": "~1.1.13",
+    "xtend": "~4.0.0"
+  },
+  "gitHead": "89caa1a6a24a4cdb08671b4aad7021da22cfa892",
+  "homepage": "https://github.com/mcollina/levelgraph#readme",
+  "_id": "levelgraph@1.1.1",
+  "_shasum": "216914344988738035f9d90e128a8182eb2cf4b9",
+  "_from": "levelgraph@",
+  "_npmVersion": "2.14.12",
+  "_nodeVersion": "4.2.4",
+  "_npmUser": {
+    "name": "matteo.collina",
+    "email": "hello@matteocollina.com"
+  },
+  "dist": {
+    "shasum": "216914344988738035f9d90e128a8182eb2cf4b9",
+    "size": 731747,
+    "noattachment": false,
+    "tarball": "http://registry.npm.taobao.org/levelgraph/download/levelgraph-1.1.1.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "matteo.collina",
+      "email": "hello@matteocollina.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-5-east.internal.npmjs.com",
+    "tmp": "tmp/levelgraph-1.1.1.tgz_1455871284872_0.9394780250731856"
+  },
+  "directories": {},
+  "publish_time": 1455871287621,
+  "_cnpm_publish_time": 1455871287621,
+  "_resolved": "https://registry.npm.taobao.org/levelgraph/download/levelgraph-1.1.1.tgz"
+}

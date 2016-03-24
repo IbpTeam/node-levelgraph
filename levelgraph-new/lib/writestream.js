@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2014 Matteo Collina and LevelGraph Contributors
+Copyright (c) 2013-2015 Matteo Collina and LevelGraph Contributors
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -23,31 +23,46 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var Transform = require('readable-stream').Transform
-  , materializer = require('./utilities').materializer;
+var Transform = require('readable-stream').Transform;
+var genKey = require('./utilities').genKey;
+var genKeys = require('./utilities').genKeys;
+var defs = require('./utilities').defs;
+var inherits = require('inherits');
 
-function MaterializerStream(options) {
-  if (!(this instanceof MaterializerStream)) {
-    return new MaterializerStream(options);
+function genActions(triple) {
+  var json = JSON.stringify(triple)
+    , keys = genKeys(triple)
+    , i
+    , result = [];
+
+  for (i = 0; i < keys.length; i++) {
+    result.push({ key: keys[i], value: json });
   }
 
+  return result;
+}
+
+function WriteStream(options) {
+  if (!(this instanceof WriteStream)) {
+    return new WriteStream(options);
+  }
+
+  options = options || {};
   options.objectMode = true;
 
   Transform.call(this, options);
-
-  this.pattern = options.pattern;
 }
 
-MaterializerStream.prototype = Object.create(
-  Transform.prototype,
-  { constructor: { value: MaterializerStream } }
-);
+inherits(WriteStream, Transform);
 
-MaterializerStream.prototype._transform = function(data, encoding, done) {
+WriteStream.prototype._transform = function(data, encoding, done) {
+  var that = this, i, actions = genActions(data);
 
-  this.push(materializer(this.pattern, data));
+  for (i = 0; i < actions.length; i++) {
+    that.push(actions[i]);
+  }
 
   done();
 };
 
-module.exports = MaterializerStream;
+module.exports = WriteStream;

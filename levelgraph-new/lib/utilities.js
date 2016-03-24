@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2014 Matteo Collina and LevelGraph Contributors
+Copyright (c) 2013-2015 Matteo Collina and LevelGraph Contributors
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -138,6 +138,12 @@ function typesFromPattern(pattern) {
   });
 }
 
+function applyUpperBoundChar(key) {
+  var parts = key.split('::');
+  var len = parts.length;
+  return len === 4 && parts[len-1] !== '' ? key : key + upperBoundChar;
+}
+
 function createQuery(pattern, options) {
   var types = typesFromPattern(pattern)
     , preferiteIndex = options && options.index
@@ -145,8 +151,8 @@ function createQuery(pattern, options) {
     , key = genKey(index, pattern, '')
     , limit = pattern.limit
     , reverse = pattern.reverse || false
-    , start = reverse ? key + upperBoundChar : key
-    , end = reverse ? key : key + upperBoundChar
+    , start = reverse ? applyUpperBoundChar(key) : key
+    , end = reverse ? key : applyUpperBoundChar(key)
     , query = {
           start: start
         , end: end

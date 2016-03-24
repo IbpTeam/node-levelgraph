@@ -4,7 +4,7 @@ var levelgraph = require('../lib/levelgraph')
   , path = require('path')
   , osenv = require('osenv');
 
-describe('a basic unicode triple store', function() {
+describe('a basic triple store', function() {
 
   var db, leveldb = leveldb;
 
@@ -18,7 +18,7 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should put a triple', function(done) {
-    var triple = { subject: '车', predicate: '是', object: '交通工具' };
+    var triple = { subject: 'a', predicate: 'b', object: 'c' };
     db.put(triple, done);
   });
 
@@ -27,54 +27,54 @@ describe('a basic unicode triple store', function() {
     var triple;
 
     beforeEach(function(done) {
-      triple = { subject: '􀃿', predicate: '🜁', object: '🚃' };
+      triple = { subject: 'a', predicate: 'b', object: 'c' };
       db.put(triple, done);
     });
 
     it('should get it specifiying the subject', function(done) {
-      db.get({ subject: '􀃿' }, function(err, list) {
+      db.get({ subject: 'a' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the object', function(done) {
-      db.get({ object: '🚃' }, function(err, list) {
+      db.get({ object: 'c' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the predicate', function(done) {
-      db.get({ predicate: '🜁' }, function(err, list) {
+      db.get({ predicate: 'b' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the subject and the predicate', function(done) {
-      db.get({ subject: '􀃿', predicate: '🜁' }, function(err, list) {
+      db.get({ subject: 'a', predicate: 'b' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the subject and the object', function(done) {
-      db.get({ subject: '􀃿', object: '🚃' }, function(err, list) {
+      db.get({ subject: 'a', object: 'c' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the predicate and the object', function(done) {
-      db.get({ predicate: '🜁', object: '🚃' }, function(err, list) {
+      db.get({ predicate: 'b', object: 'c' }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
     });
 
     it('should get it specifiying the subject and falsy params', function(done) {
-      db.get({ subject: '􀃿', predicate: false, object: null }, function(err, list) {
+      db.get({ subject: 'a', predicate: false, object: null }, function(err, list) {
         expect(list).to.eql([triple]);
         done();
       });
@@ -94,7 +94,7 @@ describe('a basic unicode triple store', function() {
     });
 
     it('should return the triple through the getStream interface', function(done) {
-      var stream = db.getStream({ predicate: '🜁' });
+      var stream = db.getStream({ predicate: 'b' });
       stream.on('data', function(data) {
         expect(data).to.eql(triple);
       });
@@ -102,7 +102,7 @@ describe('a basic unicode triple store', function() {
     });
 
     it('should return the triple through the getStream interface with falsy params', function(done) {
-      var stream = db.getStream({ subject: null, predicate: '🜁', object: false });
+      var stream = db.getStream({ subject: null, predicate: 'b', object: false });
       stream.on('data', function(data) {
         expect(data).to.eql(triple);
       });
@@ -139,16 +139,16 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should put an array of triples', function(done) {
-    var t1 = { subject: '车', predicate: '是', object: '交通工具' }
-      , t2 = { subject: '车', predicate: '是', object: '动物' };
+    var t1 = { subject: 'a', predicate: 'b', object: 'c' }
+      , t2 = { subject: 'a', predicate: 'b', object: 'd' };
     db.put([t1, t2], done);
   });
 
   it('should get only triples with exact match of subjects', function(done) {
-    var t1 = { subject: '飞机', predicate: '是', object: '交通工具' }
-      , t2 = { subject: '车', predicate: '是', object: '动物' };
+    var t1 = { subject: 'a1', predicate: 'b', object: 'c' }
+      , t2 = { subject: 'a', predicate: 'b', object: 'd' };
     db.put([t1, t2], function() {
-      db.get({ subject: '车' }, function(err, matched) {
+      db.get({ subject: 'a' }, function(err, matched) {
         expect(matched.length).to.eql(1);
         expect(matched[0]).to.eql(t2);
         done();
@@ -157,9 +157,9 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should put a triple with an object to false', function(done) {
-    var t = { subject: '车', predicate: '是', object: false };
+    var t = { subject: 'a', predicate: 'b', object: false };
     db.put(t, function() {
-      leveldb.get('spo::车::是::false', done);
+      leveldb.get('spo::a::b::false', done);
     });
   });
 
@@ -169,34 +169,34 @@ describe('a basic unicode triple store', function() {
       , triple2;
 
     beforeEach(function(done) {
-      triple1 = { subject: '飞机', predicate: '是', object: '交通工具' };
-      triple2 = { subject: '狗熊', predicate: '是', object: '动物' };
+      triple1 = { subject: 'a1', predicate: 'b', object: 'c' };
+      triple2 = { subject: 'a2', predicate: 'b', object: 'd' };
       db.put([triple1, triple2], done);
     });
 
     it('should get one by specifiying the subject', function(done) {
-      db.get({ subject: '飞机' }, function(err, list) {
+      db.get({ subject: 'a1' }, function(err, list) {
         expect(list).to.eql([triple1]);
         done();
       });
     });
 
     it('should get one by specifiying the subject and a falsy predicate', function(done) {
-      db.get({ subject: '飞机', predicate: null }, function(err, list) {
+      db.get({ subject: 'a1', predicate: null }, function(err, list) {
         expect(list).to.eql([triple1]);
         done();
       });
     });
 
     it('should get two by specifiying the predicate', function(done) {
-      db.get({ predicate: '是' }, function(err, list) {
+      db.get({ predicate: 'b' }, function(err, list) {
         expect(list).to.eql([triple1, triple2]);
         done();
       });
     });
 
     it('should get two by specifiying the predicate and a falsy subject', function(done) {
-      db.get({ subject: null, predicate: '是' }, function(err, list) {
+      db.get({ subject: null, predicate: 'b' }, function(err, list) {
         expect(list).to.eql([triple1, triple2]);
         done();
       });
@@ -204,7 +204,7 @@ describe('a basic unicode triple store', function() {
 
     it('should remove one and still return the other', function(done) {
       db.del(triple2, function() {
-        db.get({ predicate: '是' }, function(err, list) {
+        db.get({ predicate: 'b' }, function(err, list) {
           expect(list).to.eql([triple1]);
           done();
         });
@@ -213,7 +213,7 @@ describe('a basic unicode triple store', function() {
 
     it('should return both triples through the getStream interface', function(done) {
       var triples = [triple1, triple2]
-        , stream = db.getStream({ predicate: '是' });
+        , stream = db.getStream({ predicate: 'b' });
       stream.on('data', function(data) {
         expect(data).to.eql(triples.shift());
       });
@@ -222,21 +222,21 @@ describe('a basic unicode triple store', function() {
     });
 
     it('should return only one triple with limit 1', function(done) {
-      db.get({ predicate: '是', limit: 1 }, function(err, list) {
+      db.get({ predicate: 'b', limit: 1 }, function(err, list) {
         expect(list).to.eql([triple1]);
         done();
       });
     });
 
     it('should return two triples with limit 2', function(done) {
-      db.get({ predicate: '是', limit: 2 }, function(err, list) {
+      db.get({ predicate: 'b', limit: 2 }, function(err, list) {
         expect(list).to.eql([triple1, triple2]);
         done();
       });
     });
 
     it('should return three triples with limit 3', function(done) {
-      db.get({ predicate: '是', limit: 3 }, function(err, list) {
+      db.get({ predicate: 'b', limit: 3 }, function(err, list) {
         expect(list).to.eql([triple1, triple2]);
         done();
       });
@@ -244,7 +244,7 @@ describe('a basic unicode triple store', function() {
 
     it('should support limit over streams', function(done) {
       var triples = [triple1]
-        , stream = db.getStream({ predicate: '是', limit: 1 });
+        , stream = db.getStream({ predicate: 'b', limit: 1 });
       stream.on('data', function(data) {
         expect(data).to.eql(triples.shift());
       });
@@ -253,14 +253,14 @@ describe('a basic unicode triple store', function() {
     });
 
     it('should return only one triple with offset 1', function(done) {
-      db.get({ predicate: '是', offset: 1 }, function(err, list) {
+      db.get({ predicate: 'b', offset: 1 }, function(err, list) {
         expect(list).to.eql([triple2]);
         done();
       });
     });
 
     it('should return only no triples with offset 2', function(done) {
-      db.get({ predicate: '是', offset: 2 }, function(err, list) {
+      db.get({ predicate: 'b', offset: 2 }, function(err, list) {
         expect(list).to.eql([]);
         done();
       });
@@ -268,7 +268,7 @@ describe('a basic unicode triple store', function() {
 
     it('should support offset over streams', function(done) {
       var triples = [triple2]
-        , stream = db.getStream({ predicate: '是', offset: 1 });
+        , stream = db.getStream({ predicate: 'b', offset: 1 });
       stream.on('data', function(data) {
         expect(data).to.eql(triples.shift());
       });
@@ -277,14 +277,14 @@ describe('a basic unicode triple store', function() {
     });
 
     it('should return the triples in reverse order with reverse true', function(done) {
-      db.get({ predicate: '是', reverse: true }, function(err, list) {
+      db.get({ predicate: 'b', reverse: true }, function(err, list) {
         expect(list).to.eql([triple2, triple1]);
         done();
       });
     });
 
     it('should return the last triple with reverse true and limit 1', function(done) {
-      db.get({ predicate: '是', reverse: true, limit: 1 }, function(err, list) {
+      db.get({ predicate: 'b', reverse: true, limit: 1 }, function(err, list) {
         expect(list).to.eql([triple2]);
         done();
       });
@@ -292,7 +292,152 @@ describe('a basic unicode triple store', function() {
 
     it('should support reverse over streams', function(done) {
       var triples = [triple2, triple1]
-        , stream = db.getStream({ predicate: '是', reverse: true });
+        , stream = db.getStream({ predicate: 'b', reverse: true });
+      stream.on('data', function(data) {
+        expect(data).to.eql(triples.shift());
+      });
+
+      stream.on('end', done);
+    });
+  });
+
+  describe('with two triple inserted with the same predicate and same object', function() {
+
+    var triple1
+      , triple2;
+
+    beforeEach(function(done) {
+      triple1 = { subject: 'a', predicate: 'b', object: 'c' };
+      triple2 = { subject: 'a2', predicate: 'b', object: 'c' };
+      db.put([triple1, triple2], done);
+    });
+
+    it('should get one by specifiying the subject', function(done) {
+      db.get({ subject: 'a' }, function(err, list) {
+        expect(list).to.eql([triple1]);
+        done();
+      });
+    });
+
+    it('should get one by specifiying the exact triple', function(done) {
+      db.get({ subject: 'a', predicate: 'b', object: 'c'}, function(err, list) {
+        expect(list).to.eql([triple1]);
+        done();
+      });
+    });
+
+    it('should get one by specifiying the subject and a falsy predicate', function(done) {
+      db.get({ subject: 'a', predicate: null }, function(err, list) {
+        expect(list).to.eql([triple1]);
+        done();
+      });
+    });
+
+    it('should get two by specifiying the predicate', function(done) {
+      db.get({ predicate: 'b' }, function(err, list) {
+        expect(list).to.eql([triple1, triple2]);
+        done();
+      });
+    });
+
+    it('should get two by specifiying the predicate and a falsy subject', function(done) {
+      db.get({ subject: null, predicate: 'b' }, function(err, list) {
+        expect(list).to.eql([triple1, triple2]);
+        done();
+      });
+    });
+
+    it('should remove one and still return the other', function(done) {
+      db.del(triple2, function() {
+        db.get({ predicate: 'b' }, function(err, list) {
+          expect(list).to.eql([triple1]);
+          done();
+        });
+      });
+    });
+
+    it('should return both triples through the getStream interface', function(done) {
+      var triples = [triple1, triple2]
+        , stream = db.getStream({ predicate: 'b' });
+      stream.on('data', function(data) {
+        expect(data).to.eql(triples.shift());
+      });
+
+      stream.on('end', done);
+    });
+
+    it('should return only one triple with limit 1', function(done) {
+      db.get({ predicate: 'b', limit: 1 }, function(err, list) {
+        expect(list).to.eql([triple1]);
+        done();
+      });
+    });
+
+    it('should return two triples with limit 2', function(done) {
+      db.get({ predicate: 'b', limit: 2 }, function(err, list) {
+        expect(list).to.eql([triple1, triple2]);
+        done();
+      });
+    });
+
+    it('should return three triples with limit 3', function(done) {
+      db.get({ predicate: 'b', limit: 3 }, function(err, list) {
+        expect(list).to.eql([triple1, triple2]);
+        done();
+      });
+    });
+
+    it('should support limit over streams', function(done) {
+      var triples = [triple1]
+        , stream = db.getStream({ predicate: 'b', limit: 1 });
+      stream.on('data', function(data) {
+        expect(data).to.eql(triples.shift());
+      });
+
+      stream.on('end', done);
+    });
+
+    it('should return only one triple with offset 1', function(done) {
+      db.get({ predicate: 'b', offset: 1 }, function(err, list) {
+        expect(list).to.eql([triple2]);
+        done();
+      });
+    });
+
+    it('should return only no triples with offset 2', function(done) {
+      db.get({ predicate: 'b', offset: 2 }, function(err, list) {
+        expect(list).to.eql([]);
+        done();
+      });
+    });
+
+    it('should support offset over streams', function(done) {
+      var triples = [triple2]
+        , stream = db.getStream({ predicate: 'b', offset: 1 });
+      stream.on('data', function(data) {
+        expect(data).to.eql(triples.shift());
+      });
+
+      stream.on('end', done);
+    });
+
+    it('should return the triples in reverse order with reverse true', function(done) {
+      db.get({ predicate: 'b', reverse: true }, function(err, list) {
+        expect(list).to.eql([triple2, triple1]);
+        done();
+      });
+    });
+
+    it('should return the last triple with reverse true and limit 1', function(done) {
+      db.get({ predicate: 'b', reverse: true, limit: 1 }, function(err, list) {
+        expect(list).to.eql([triple2]);
+        done();
+      });
+    });
+
+    it('should support reverse over streams', function(done) {
+      var triples = [triple2, triple1]
+        , stream = db.getStream({ predicate: 'b', reverse: true });
       stream.on('data', function(data) {
         expect(data).to.eql(triples.shift());
       });
@@ -305,14 +450,14 @@ describe('a basic unicode triple store', function() {
     beforeEach(function (done) {
       var triples = [];
       for (var i = 0; i < 10; i++) {
-        triples[i] = { subject: '测试项', predicate: '推导', object: '目标' + i };
+        triples[i] = { subject: 's', predicate: 'p', object: 'o' + i };
       }
       db.put(triples, done);
     });
 
     if (!process.browser) {
       it('should return the approximate size', function(done) {
-        db.approximateSize({ predicate: '是' }, function (err, size) {
+        db.approximateSize({ predicate: 'b' }, function (err, size) {
           expect(size).to.be.a('number');
           done(err);
         });
@@ -321,8 +466,8 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should put triples using a stream', function(done) {
-    var t1 = { subject: '车', predicate: '是', object: '交通工具' };
-    var t2 = { subject: '车', predicate: '是', object: '动物' };
+    var t1 = { subject: 'a', predicate: 'b', object: 'c' };
+    var t2 = { subject: 'a', predicate: 'b', object: 'd' };
     var stream = db.putStream();
     stream.on('close', done);
 
@@ -331,8 +476,8 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should store the triples written using a stream', function(done) {
-    var t1 = { subject: '车', predicate: '是', object: '交通工具' };
-    var t2 = { subject: '车', predicate: '是', object: '动物' };
+    var t1 = { subject: 'a', predicate: 'b', object: 'c' };
+    var t2 = { subject: 'a', predicate: 'b', object: 'd' };
     var stream = db.putStream();
 
     stream.write(t1);
@@ -340,7 +485,7 @@ describe('a basic unicode triple store', function() {
 
     stream.on('close', function() {
       var triples = [t1, t2];
-      var readStream = db.getStream({ predicate: '是' });
+      var readStream = db.getStream({ predicate: 'b' });
 
       readStream.on('data', function(data) {
         expect(data).to.eql(triples.shift());
@@ -351,8 +496,8 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should del the triples using a stream', function(done) {
-    var t1 = { subject: '车', predicate: '是', object: '交通工具' };
-    var t2 = { subject: '车', predicate: '是', object: '动物' };
+    var t1 = { subject: 'a', predicate: 'b', object: 'c' };
+    var t2 = { subject: 'a', predicate: 'b', object: 'd' };
     var stream = db.putStream();
 
     stream.write(t1);
@@ -365,7 +510,7 @@ describe('a basic unicode triple store', function() {
       delStream.end(t2);
 
       delStream.on('close', function() {
-        var readStream = db.getStream({ predicate: '是' });
+        var readStream = db.getStream({ predicate: 'b' });
 
         var results = [];
         readStream.on('data', function(data) {
@@ -381,15 +526,15 @@ describe('a basic unicode triple store', function() {
   });
 
   it('should support filtering', function(done) {
-    var triple1 = { subject: '车', predicate: '是', object: '动物' }
-      , triple2 = { subject: '车', predicate: '是', object: '交通工具' };
+    var triple1 = { subject: 'a', predicate: 'b', object: 'd' }
+      , triple2 = { subject: 'a', predicate: 'b', object: 'c' };
 
     db.put([triple1, triple2], function() {
       function filter(triple) {
-        return triple.object === '动物';
+        return triple.object === 'd';
       }
 
-      db.get({ subject: '车', predicate: '是', filter: filter }, function(err, results) {
+      db.get({ subject: 'a', predicate: 'b', filter: filter }, function(err, results) {
         expect(results).to.eql([triple1]);
         done();
       });
@@ -410,26 +555,26 @@ describe('a basic unicode triple store', function() {
 
     it('should call searchStream when calling joinStream', function() {
       var stub = sinon.stub(db, 'searchStream');
-      db.joinStream('车', '是', '交通工具');
-      expect(stub).to.be.calledWith('车', '是', '交通工具');
+      db.joinStream('a', 'b', 'c');
+      expect(stub).to.be.calledWith('a', 'b', 'c');
     });
 
     it('should alias search to join', function() {
       var stub = sinon.stub(db, 'search');
-      db.join('车', '是', '交通工具');
-      expect(stub).to.be.calledWith('车', '是', '交通工具');
+      db.join('a', 'b', 'c');
+      expect(stub).to.be.calledWith('a', 'b', 'c');
     });
 
     it('should warn when calling joinStream', function() {
       var stub = sinon.stub(db, 'searchStream');
-      db.joinStream('车', '是', '交通工具');
+      db.joinStream('a', 'b', 'c');
 
       expect(warnSpy).to.be.calledWith('joinStream is deprecated, use searchStream instead');
     });
 
     it('should warn when calling join', function() {
       var stub = sinon.stub(db, 'search');
-      db.join('车', '是', '交通工具');
+      db.join('a', 'b', 'c');
 
       expect(warnSpy).to.be.calledWith('join is deprecated, use search instead');
     });
@@ -442,21 +587,6 @@ describe('deferred open support', function() {
 
   afterEach(function(done) {
     db.close(done);
-  });
-
-  it('should call the callback if a level is passed', function(done) {
-    db = levelgraph(level(), done);
-  });
-
-  it('should call the callback if a level is not passed', function(done) {
-    db = levelgraph(path.join(osenv.tmpdir(), '_levelDeferred1'), done);
-  });
-
-  it('should call the callback with a levelgrap', function(done) {
-    db = levelgraph(level(), function(err, graphdb) {
-      expect(graphdb).to.be.equal(db);
-      done();
-    });
   });
 
   it('should support deferred search', function(done) {
@@ -480,7 +610,7 @@ describe('generateBatch', function () {
   });
 
   it('should generate a batch from a triple', function() {
-    var triple = { subject: '车', predicate: '是', object: '交通工具' };
+    var triple = { subject: 'a', predicate: 'b', object: 'c' };
     var ops = db.generateBatch(triple);
     expect(ops).to.have.property('length', 6);
     ops.forEach(function (op) {
@@ -490,7 +620,7 @@ describe('generateBatch', function () {
   });
 
   it('should generate a batch of type', function() {
-    var triple = { subject: '车', predicate: '是', object: '交通工具' };
+    var triple = { subject: 'a', predicate: 'b', object: 'c' };
     var ops = db.generateBatch(triple, 'del');
     expect(ops).to.have.property('length', 6);
     ops.forEach(function (op) {

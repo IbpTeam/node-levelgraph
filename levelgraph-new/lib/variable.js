@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2014 Matteo Collina and LevelGraph Contributors
+Copyright (c) 2013-2015 Matteo Collina and LevelGraph Contributors
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -23,48 +23,39 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var Transform = require('readable-stream').Transform;
-var genKey = require('./utilities').genKey;
-var genKeys = require('./utilities').genKeys;
-var defs = require('./utilities').defs;
-
-function genActions(triple) {
-  var json = JSON.stringify(triple)
-    , keys = genKeys(triple)
-    , i
-    , result = [];
-
-  for (i = 0; i < keys.length; i++) {
-    result.push({ key: keys[i], value: json });
+function Variable(name) {
+  if (!(this instanceof Variable)) {
+    return new Variable(name);
   }
 
-  return result;
+  this.name = name;
 }
 
-function WriteStream(options) {
-  if (!(this instanceof WriteStream)) {
-    return new WriteStream(options);
+Variable.prototype.bind = function(solution, value) {
+  var newsolution = {}
+    , key;
+
+  if (!this.isBindable(solution, value)) {
+    return null;
   }
 
-  options = options || {};
-  options.objectMode = true;
-
-  Transform.call(this, options);
-}
-
-WriteStream.prototype = Object.create(
-  Transform.prototype,
-  { constructor: { value: WriteStream } }
-);
-
-WriteStream.prototype._transform = function(data, encoding, done) {
-  var that = this, i, actions = genActions(data);
-
-  for (i = 0; i < actions.length; i++) {
-    that.push(actions[i]);
+  for (key in solution) {
+    if (solution.hasOwnProperty(key)) {
+      newsolution[key] = solution[key];
+    }
   }
 
-  done();
+  newsolution[this.name] = value;
+
+  return newsolution;
 };
 
-module.exports = WriteStream;
+Variable.prototype.isBound = function(solution) {
+  return solution[this.name] && true || false;
+};
+
+Variable.prototype.isBindable = function(solution, value) {
+  return !solution[this.name] || solution[this.name] === value;
+};
+
+module.exports = Variable;

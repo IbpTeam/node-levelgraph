@@ -49,6 +49,7 @@ http://nodejsconf.it.
   * [Filtering](#filtering)
   * [Putting and Deleting through Streams](#putting-and-deleting-through-streams)
   * [Generate batch operations](#generate-batch-operations)
+  * [Generate levelup query](#generate-levelup-query)
 * [Navigator API](#navigator-api)
 * [LevelUp integration](#levelup-integration)
 * [Browserify](#browserify)
@@ -65,7 +66,7 @@ http://nodejsconf.it.
 ### On Node.js
 
 ```
-npm install levelgraph --save
+npm install levelgraph level-browserify --save
 ```
 
 At the moment it requires node v0.10.x, but the port to node v0.8.x
@@ -78,6 +79,8 @@ Just download
 [levelgraph.min.js](https://github.com/mcollina/levelgraph/blob/master/build/levelgraph.min.js)
 and you are done!
 
+Alternatively, you can use [browserify](http://browserify.org/).
+
 ## Usage
 
 The LevelGraph API remains the same for Node.js and the browsers,
@@ -85,8 +88,11 @@ however the initialization change slightly.
 
 Initializing a database is very easy:
 ```javascript
-var levelgraph = require("levelgraph"); // not needed in the Browser
-var db = levelgraph("yourdb");
+var level = require("level-browserify");
+var levelgraph = require("levelgraph");
+
+// just use this in the browser with the provided bundle
+var db = levelgraph(level("yourdb"));
 ```
 
 ### Get and Put
@@ -445,6 +451,15 @@ var putBatch = db.generateBatch(triple);
 var delBatch = db.generateBatch(triple, 'del');
 ```
 
+### Generate levelup query
+
+Return the leveldb query for the given triple.
+
+```js
+var query = db.createQuery({ predicate: "b"});
+leveldb.createReadStream(query);
+```
+
 ## Navigator API
 
 The Navigator API is a fluent API for LevelGraph, loosely inspired by
@@ -660,11 +675,13 @@ LevelGraph is only possible due to the excellent work of the following contribut
 href="https://github.com/jez0990">GitHub/jez0990</a></td></tr>
 <tr><th align="left">Elf Pavlik</th><td><a href="https://github.com/elf-pavlik">GitHub/elf-pavlik</a></td><td><a href="https://twitter.com/elfpavlik">Twitter/@elfpavlik</a></td></tr>
 <tr><th align="left">Riceball LEE</th><td><a href="https://github.com/snowyu">GitHub/snowyu</a></td><td></td></tr>
+<tr><th align="left">Brian Woodward</th><td><a href="https://github.com/doowb">GitHub/doowb</a></td><td><a href="https://twitter.com/doowb">Twitter/@doowb</a></td></tr>
+<tr><th align="left">Leon Chen</th><td><a href="https://github.com/transcranial">GitHub/transcranial</a></td><td><a href="https://twitter.com/transcranial">Twitter/@transcranial</a></td></tr>
 </tbody></table>
 
 ## LICENSE - "MIT License"
 
-Copyright (c) 2013-2014 Matteo Collina and LevelGraph Contributors
+Copyright (c) 2013-2015 Matteo Collina and LevelGraph Contributors
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

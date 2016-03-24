@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2014 Matteo Collina and LevelGraph Contributors
+Copyright (c) 2013-2015 Matteo Collina and LevelGraph Contributors
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -23,5 +23,29 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var Leveljs = require('level-js');
-module.exports = function(l) { return new Leveljs(l); };
+var Transform = require('readable-stream').Transform
+  , inherits = require('inherits')
+  , materializer = require('./utilities').materializer;
+
+function MaterializerStream(options) {
+  if (!(this instanceof MaterializerStream)) {
+    return new MaterializerStream(options);
+  }
+
+  options.objectMode = true;
+
+  Transform.call(this, options);
+
+  this.pattern = options.pattern;
+}
+
+inherits(MaterializerStream, Transform);
+
+MaterializerStream.prototype._transform = function(data, encoding, done) {
+
+  this.push(materializer(this.pattern, data));
+
+  done();
+};
+
+module.exports = MaterializerStream;
